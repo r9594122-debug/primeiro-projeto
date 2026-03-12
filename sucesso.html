@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Pagamento Aprovado!</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; background: #f4f4f9; }
+        .card { background: white; padding: 30px; border-radius: 15px; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .login-box { background: #eee; padding: 15px; margin-top: 20px; border-radius: 5px; font-weight: bold; color: #2ecc71; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 30px; height: 30px; animation: spin 2s linear infinite; margin: 10px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Obrigado pela compra!</h1>
+        <p id="status-text">Aguardando confirmação do pagamento...</p>
+        <div id="loader" class="loader"></div>
+        
+        <div id="entrega" style="display: none;">
+            <p>Sua conta foi liberada:</p>
+            <div class="login-box" id="dados-conta"></div>
+            <p><small>Guarde esses dados com segurança.</small></p>
+        </div>
+    </div>
+    <div id="area-da-conta" style="display:none;">
+    <h3>🎮 Seus Dados de Acesso:</h3>
+   <div class="dados" id="dados-conta-area"></div>
+    
+    <div style="background: #334155; padding: 10px; border-radius: 8px; margin-top: 15px; font-size: 0.9rem;">
+        <strong>⚠️ IMPORTANTE:</strong>
+        <p>1. Logue no Roblox usando o Nick e Senha acima.</p>
+        <p>2. Vincule seu próprio e-mail e mude a senha imediatamente para sua segurança.</p>
+    </div>
+</div>
+
+   <script>
+    const _URL = 'https://pqrtxbcaxnlcqurzmryi.supabase.co';
+    const _KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnR4YmNheG5sY3F1cnptcnlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2MzQ3MTksImV4cCI6MjA4ODIxMDcxOX0.e59ULROS4rI9xh-YFyarJimHX4ntNeqq7zNmgWBFKow';
+    const _supabase = supabase.createClient(_URL, _KEY);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const externalReference = urlParams.get('external_reference');
+
+    async function checarPedido() {
+        if (!externalReference) {
+            document.getElementById('status-text').innerText = "Pedido não encontrado.";
+            return;
+        }
+
+        console.log("Aguardando liberação do pedido: " + externalReference);
+
+        const interval = setInterval(async () => {
+            // BUSCA NA TABELA DE ESTOQUE (onde estão os nicks e senhas)
+            // Procuramos a conta que o robô 'carimbou' com o ID desse pedido
+            const { data, error } = await _supabase
+                .from('estoque_contas')
+                .select('dados_contas') // Nome da sua coluna na foto
+                .eq('pedido_id', externalReference)
+                .single();
+
+            if (data && data.dados_contas) {
+                clearInterval(interval);
+                
+                // Esconde o carregando e mostra a conta
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('status-text').innerText = "✅ Pagamento Confirmado!";
+                document.getElementById('entrega').style.display = 'block';
+                
+                // Exibe o Nick e Senha para o comprador
+                document.getElementById('dados-conta').innerText = data.dados_contas;
+            }
+        }, 3000); // Tenta a cada 3 segundos
+    }
+
+    checarPedido();
+</script>
+</body>
+</html>

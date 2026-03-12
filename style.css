@@ -1,0 +1,626 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap');
+
+:root {
+    --bg: #070b14;
+    --bg2: #0d1220;
+    --card: #0f1826;
+    --card2: #131e2e;
+    --accent: #00e5ff;
+    --accent2: #00ff88;
+    --gold: #ffd700;
+    --text: #e8f4ff;
+    --muted: #7a9bb5;
+    --border: rgba(0, 229, 255, 0.15);
+    --border-hover: rgba(0, 229, 255, 0.5);
+    --glow: rgba(0, 229, 255, 0.12);
+    --glow2: rgba(0, 255, 136, 0.12);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    background-image:
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0,229,255,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(0,255,136,0.04) 0%, transparent 60%);
+}
+
+/* ── HEADER ───────────────────────────────────────── */
+header {
+    background: rgba(13, 18, 32, 0.95);
+    backdrop-filter: blur(12px);
+    padding: 0 5%;
+    height: 68px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.4);
+}
+
+header h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-transform: uppercase;
+}
+
+.cart-icon {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--accent);
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+}
+
+.cart-icon:hover {
+    border-color: var(--accent);
+    background: rgba(0, 229, 255, 0.08);
+    box-shadow: 0 0 16px var(--glow);
+}
+
+.btn-notificacao {
+    background: var(--card2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btn-notificacao:hover {
+    border-color: var(--accent2);
+    color: var(--accent2);
+    background: rgba(0, 255, 136, 0.06);
+}
+
+/* ── HAMBURGER ───────────────────────────────────── */
+.menu-mobile {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 4px;
+}
+
+.menu-mobile span {
+    width: 22px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: all 0.3s;
+    box-shadow: 0 0 6px var(--accent);
+}
+
+/* ── SIDEBAR ─────────────────────────────────────── */
+.sidebar {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 3000;
+    top: 0;
+    left: 0;
+    background: rgba(10, 15, 28, 0.98);
+    backdrop-filter: blur(20px);
+    overflow-x: hidden;
+    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-right: 1px solid var(--border);
+}
+
+.sidebar-content {
+    padding: 90px 24px 40px;
+    min-width: 250px;
+}
+
+.sidebar h2 {
+    font-family: 'Rajdhani', sans-serif;
+    color: var(--accent);
+    margin-bottom: 28px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+.sidebar ul { list-style: none; }
+
+.sidebar li {
+    padding: 14px 16px;
+    color: var(--muted);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.sidebar li:hover {
+    background: rgba(0, 229, 255, 0.07);
+    color: var(--accent);
+    border-color: var(--border);
+    padding-left: 22px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    font-size: 28px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    transition: color 0.2s;
+    font-family: 'Nunito', sans-serif;
+}
+
+.close-btn:hover { color: var(--accent); }
+
+/* ── HERO ────────────────────────────────────────── */
+.hero {
+    padding: 70px 5% 60px;
+    text-align: center;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+        radial-gradient(ellipse 60% 80% at 50% 50%, rgba(0,229,255,0.05) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.hero-content { position: relative; z-index: 1; }
+
+.hero h2 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #ffffff 0%, var(--accent) 50%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 14px;
+    line-height: 1.2;
+}
+
+.hero p {
+    color: var(--muted);
+    font-size: 1.05rem;
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* ── PRODUCTS GRID ───────────────────────────────── */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+    padding: 40px 5%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.empty-msg {
+    color: var(--muted);
+    text-align: center;
+    grid-column: 1 / -1;
+    padding: 40px;
+    font-size: 1rem;
+}
+
+/* ── PRODUCT CARD ────────────────────────────────── */
+.product-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 0;
+    text-align: center;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.product-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.product-card:hover {
+    border-color: rgba(0, 229, 255, 0.4);
+    transform: translateY(-6px);
+    box-shadow:
+        0 16px 40px rgba(0,0,0,0.4),
+        0 0 30px var(--glow);
+}
+
+.product-card:hover::before { opacity: 1; }
+
+.product-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s;
+}
+
+.product-card:hover img { transform: scale(1.04); }
+
+.product-card .card-body {
+    padding: 16px;
+}
+
+.product-card h3 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+
+.product-card .preco {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--accent2);
+    margin: 8px 0;
+    font-family: 'Rajdhani', sans-serif;
+    letter-spacing: 1px;
+}
+
+.product-card .estoque {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin: 6px 0 14px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+.product-card .estoque.ok {
+    color: var(--accent2);
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid rgba(0, 255, 136, 0.25);
+}
+
+.product-card .estoque.esgotado {
+    color: #ff5c5c;
+    background: rgba(255, 92, 92, 0.08);
+    border: 1px solid rgba(255, 92, 92, 0.2);
+}
+
+.btn-info {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid rgba(0, 229, 255, 0.4);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+    width: calc(100% - 0px);
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.btn-info:hover {
+    background: rgba(0, 229, 255, 0.1);
+    border-color: var(--accent);
+    box-shadow: 0 0 14px var(--glow);
+}
+
+/* ── MODALS ──────────────────────────────────────── */
+.cart-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.88);
+    backdrop-filter: blur(6px);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.cart-content {
+    background: var(--card);
+    width: 100%;
+    max-width: 420px;
+    padding: 28px;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    box-shadow:
+        0 0 60px rgba(0,0,0,0.6),
+        0 0 30px var(--glow);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.cart-content h2 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+/* ── CART ITEMS ──────────────────────────────────── */
+#cart-items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 240px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+#cart-items::-webkit-scrollbar { width: 4px; }
+#cart-items::-webkit-scrollbar-track { background: transparent; }
+#cart-items::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 4px;
+}
+
+.cart-item {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 3px solid var(--accent2);
+}
+
+.cart-item span { font-size: 0.9rem; font-weight: 600; }
+
+.remove {
+    background: rgba(255, 77, 77, 0.15) !important;
+    color: #ff5c5c !important;
+    border: 1px solid rgba(255, 77, 77, 0.3) !important;
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 6px !important;
+    cursor: pointer;
+    font-size: 13px !important;
+    font-weight: bold;
+    padding: 0 !important;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.remove:hover {
+    background: rgba(255, 77, 77, 0.3) !important;
+    border-color: #ff5c5c !important;
+}
+
+/* ── CART BUTTONS ────────────────────────────────── */
+.cart-content button {
+    width: 100%;
+    padding: 13px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+}
+
+.btn-pagar {
+    background: linear-gradient(135deg, #009ee3, #0077bb) !important;
+    color: white !important;
+    box-shadow: 0 4px 16px rgba(0, 158, 227, 0.25) !important;
+}
+
+.btn-pagar:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 158, 227, 0.4) !important;
+}
+
+.btn-fechar {
+    background: transparent !important;
+    color: var(--muted) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+}
+
+.btn-fechar:hover {
+    color: #ff5c5c !important;
+    border-color: rgba(255, 92, 92, 0.4) !important;
+    background: rgba(255, 92, 92, 0.06) !important;
+}
+
+/* ── ENTREGA DE CONTA ────────────────────────────── */
+.entrega-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+}
+
+.entrega-box {
+    background: var(--card);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    border-radius: 18px;
+    padding: 32px;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    box-shadow:
+        0 0 60px rgba(0,0,0,0.6),
+        0 0 40px rgba(0, 255, 136, 0.08);
+}
+
+.entrega-box h2 {
+    font-family: 'Rajdhani', sans-serif;
+    color: var(--accent2);
+    margin-bottom: 8px;
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.sub {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+
+.conta-area {
+    background: var(--bg2);
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 20px;
+    word-break: break-all;
+    color: var(--accent2);
+    font-family: monospace;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.botoes-conta {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.btn-copiar {
+    background: var(--accent2) !important;
+    color: #000 !important;
+    border: none !important;
+    padding: 11px 22px !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    font-weight: 700 !important;
+    font-family: 'Nunito', sans-serif !important;
+    font-size: 0.9rem !important;
+    transition: all 0.2s !important;
+}
+
+.btn-copiar:hover {
+    opacity: 0.85 !important;
+    transform: translateY(-1px) !important;
+}
+
+/* ── NOTIFICAÇÃO ─────────────────────────────────── */
+.notificacao-box {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    width: 300px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 20px;
+    border-radius: 14px;
+    display: none;
+    z-index: 9999;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+}
+
+.notificacao-box h3 {
+    font-family: 'Rajdhani', sans-serif;
+    color: var(--accent);
+    margin-bottom: 14px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.notificacao-box #listaContas {
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    word-break: break-all;
+    margin-bottom: 14px;
+}
+
+.notificacao-box button {
+    width: 100%;
+    padding: 9px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.notificacao-box button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* ── SCROLLBAR GLOBAL ────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 229, 255, 0.3);
+    border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ── MOBILE ──────────────────────────────────────── */
+@media (max-width: 600px) {
+    header { padding: 0 4%; }
+    header h1 { font-size: 1.2rem; }
+    .hero { padding: 50px 5% 40px; }
+    .products-grid { padding: 24px 4%; gap: 14px; }
+    .product-card img { height: 150px; }
+}

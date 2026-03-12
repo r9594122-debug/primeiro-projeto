@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loja Anjos</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+</head>
+<body>
+
+<header>
+    <div class="menu-mobile" onclick="toggleMenu()" style="cursor: pointer;">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <h1>Loja Anjos</h1>
+
+    <div class="cart-icon" onclick="toggleCart()" style="cursor: pointer;">
+        🛒 Carrinho (<span id="cart-count">0</span>)
+    </div>
+    <button onclick="abrirNotificacao()" class="btn-notificacao">
+🔔 Minhas Contas
+</button>
+</header>
+<div id="side-menu" class="sidebar">
+    <button class="close-btn" onclick="toggleMenu()">&times;</button>
+    
+    <div class="sidebar-content">
+        <h2>Categorias</h2>
+        <ul>
+            <li onclick="navegar('contas')">👤 Contas à Venda</li>
+            <li onclick="navegar('permanentes')">🍏 Frutas Permanentes</li>
+            <li onclick="navegar('gamepass')">🎫 Gamepasses</li>
+        </ul>
+    </div>
+</div>
+<section class="hero">
+    <div class="hero-content">
+        <h2>Domine os Mares com as Melhores Frutas!</h2>
+        <p>Preços imbatíveis em Contas, Frutas Permanentes e Gamepasses.</p>
+    </div>
+</section>
+
+<main class="products-grid">
+</main>
+
+<div id="info-modal" class="cart-modal"> <div class="cart-content" style="text-align: center;">
+        <div id="info-detalhes">
+            </div>
+        <button class="btn-pagar" id="btn-confirmar-add">Adicionar ao Carrinho</button>
+        <button class="btn-fechar" onclick="fecharInfo()">Voltar</button>
+    </div>
+</div>
+
+<div id="cart-modal" class="cart-modal">
+    <div class="cart-content">
+        <h2 style="text-align: center; margin-top: 0;">Seu Carrinho</h2>
+        
+        <ul id="cart-items"></ul>
+        
+        <p style="font-size: 1.2rem; text-align: center;">
+            <strong>Total: R$ <span id="cart-total">0.00</span></strong>
+        </p>
+<button onclick="pagarPix()">
+    Pagar com Pix
+</button>
+       <button id="btn-finalizar" onclick="finalizarCompra()">
+    Pagar com Mercado Pago
+</button>
+        <button id="btn-whatsapp" onclick="irParaWhatsapp()" style="display:none; background:#25D366;">
+    💬 Comprar pelo WhatsApp
+</button>
+        <button class="btn-fechar" onclick="toggleCart()">
+            Fechar Carrinho
+        </button>
+       
+    </div>
+</div>
+<div id="entregaConta" class="entrega-overlay">
+
+  <div class="entrega-box">
+
+      <h2>🎉 Conta entregue</h2>
+      <p class="sub">Copie os dados da sua conta abaixo</p>
+
+      <div class="conta-area">
+          <span id="usuarioConta"></span>
+      </div>
+
+      <div class="botoes-conta">
+
+          <button class="btn-copiar" onclick="copiarConta()">
+              📋 Copiar conta
+          </button>
+
+          <button class="btn-fechar" onclick="fecharConta()">
+              Fechar
+          </button>
+
+      </div>
+
+  </div>
+
+</div>
+<div id="notificacaoConta" class="notificacao-box">
+
+  <h3>🔔 Suas Contas</h3>
+
+  <div id="listaContas">
+  Nenhuma conta encontrada
+  </div>
+
+  <button onclick="fecharNotificacao()">Fechar</button>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="script.js"></script>
+</body>
+</html>
