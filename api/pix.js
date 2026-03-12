@@ -1,4 +1,5 @@
-import { createClient } from "@supabase/supabase-js"
+const { createClient } = require("@supabase/supabase-js")
+
 
 export default async function handler(req, res) {
     if (req.method !== "POST") {
@@ -73,3 +74,4 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: "Erro ao gerar PIX" })
     }
 }
+
