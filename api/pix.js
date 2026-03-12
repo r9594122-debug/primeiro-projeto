@@ -45,7 +45,7 @@ module.exports = async function handler(req, res)  {
         })
 
         const data = await response.json()
-
+console.log("MP Response:", JSON.stringify(data)) // ADICIONA ESSA LINHA
         if (!response.ok) {
             return res.status(400).json(data)
         }
@@ -74,5 +74,6 @@ module.exports = async function handler(req, res)  {
         return res.status(500).json({ error: "Erro ao gerar PIX" })
     }
 }
+
 
 
