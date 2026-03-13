@@ -674,10 +674,20 @@ async function carregarDashboard() {
 
 // ESTOQUE
 async function carregarEstoque() {
-    const { data: contas } = await _supabase.from('estoque_contas').select('*, produtos(nome)').order('id', { ascending: false })
-    const { data: produtos } = await _supabase.from('produtos').select('id, nome').eq('categoria', 'contas')
+    const { data: contas } = await _supabase
+        .from('estoque_contas')
+        .select('*')
+        .order('id', { ascending: false })
 
-    // Preenche select do modal
+    const { data: produtos } = await _supabase
+        .from('produtos')
+        .select('id, nome')
+        .eq('categoria', 'contas')
+
+    // Mapa de id → nome
+    const mapaProdutos = {}
+    ;(produtos || []).forEach(p => { mapaProdutos[p.id] = p.nome })
+
     const sel = document.getElementById('estoque-produto')
     sel.innerHTML = (produtos || []).map(p => `<option value="${p.id}">${p.nome}</option>`).join('')
 
@@ -691,14 +701,13 @@ async function carregarEstoque() {
     }
     tbody.innerHTML = contas.map(c => `
         <tr>
-            <td><strong>${c.produtos?.nome || 'Produto #' + c.produto_id}</strong></td>
+            <td><strong>${mapaProdutos[c.produto_id] || 'Produto #' + c.produto_id}</strong></td>
             <td style="font-family:monospace;font-size:0.82rem;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.dados_contas || '-'}</td>
             <td><span class="badge ${c.status === 'disponivel' ? 'badge-green' : 'badge-red'}">${c.status}</span></td>
-            <td><button class="btn btn-danger" onclick="deletarEstoque(${c.id})">Remover</button></td>
+            <td><button class="btn btn-danger" onclick="deletarEstoque('${c.id}')">Remover</button></td>
         </tr>
     `).join('')
 }
-
 async function salvarEstoque() {
     const produto_id = document.getElementById('estoque-produto').value
     const dados_contas = document.getElementById('estoque-dados').value.trim()
