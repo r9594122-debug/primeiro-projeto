@@ -1209,7 +1209,7 @@ document.querySelectorAll('.modal-overlay').forEach(m => {
 
 
 // ===================== IMAGEM / SUPABASE STORAGE =====================
-const STORAGE_BUCKET = 'produto-imagens' // nome do bucket no Supabase Storage
+const STORAGE_BUCKET = 'produtos' // nome do bucket no Supabase Storage
 
 async function uploadImgParaSupabase(file) {
     const ext = file.name.split('.').pop().toLowerCase()
