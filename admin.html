@@ -251,6 +251,22 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 .badge-cyan { background: rgba(0,229,255,0.12); color: var(--accent); border: 1px solid rgba(0,229,255,0.25); }
 .badge-gold { background: rgba(255,215,0,0.12); color: var(--gold); border: 1px solid rgba(255,215,0,0.25); }
 
+/* ID BADGE — destaque para IDs de produto */
+.id-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: rgba(0,229,255,0.07);
+    border: 1px solid rgba(0,229,255,0.18);
+    font-family: monospace;
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
 /* BOTÕES */
 .btn {
     padding: 9px 18px;
@@ -268,6 +284,7 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 .btn-danger:hover { background: rgba(255,92,92,0.25); }
 .btn-outline { background: transparent; color: var(--accent); border: 1px solid var(--border2); }
 .btn-outline:hover { background: rgba(0,229,255,0.08); }
+.btn-sm { padding: 5px 12px; font-size: 0.78rem; }
 
 /* FORMULÁRIO */
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
@@ -288,6 +305,41 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 .form-group textarea { resize: vertical; min-height: 80px; }
 .form-full { grid-column: 1 / -1; }
 
+/* Hint de campo */
+.form-hint {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+/* Separador de modo no modal */
+.mode-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 18px;
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    overflow: hidden;
+}
+.mode-tab {
+    flex: 1;
+    padding: 9px;
+    text-align: center;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--muted);
+    background: transparent;
+    border: none;
+    transition: all 0.2s;
+    font-family: 'Nunito', sans-serif;
+}
+.mode-tab.active {
+    background: rgba(0,229,255,0.12);
+    color: var(--accent);
+}
+.mode-tab:first-child { border-right: 1px solid var(--border2); }
+
 /* MODAL */
 .modal-overlay {
     display: none;
@@ -307,7 +359,7 @@ tr:hover td { background: rgba(255,255,255,0.02); }
     border-radius: 16px;
     padding: 28px;
     width: 100%;
-    max-width: 500px;
+    max-width: 520px;
     max-height: 90vh;
     overflow-y: auto;
 }
@@ -327,6 +379,26 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 
 /* LOADING */
 .loading { color: var(--muted); text-align: center; padding: 40px; font-size: 0.9rem; }
+
+/* INLINE EDIT */
+.inline-id-edit {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.inline-id-edit input {
+    width: 60px;
+    padding: 4px 8px;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    color: var(--accent);
+    font-family: monospace;
+    font-size: 0.82rem;
+    text-align: center;
+    outline: none;
+}
+.inline-id-edit input:focus { border-color: var(--accent); }
 
 /* SCROLLBAR */
 ::-webkit-scrollbar { width: 5px; }
@@ -446,14 +518,25 @@ tr:hover td { background: rgba(255,255,255,0.02); }
                     </div>
                     <button class="btn btn-primary" onclick="abrirModalEstoque()">+ Adicionar Conta</button>
                 </div>
+
+                <!-- Legenda de IDs -->
+                <div id="legenda-ids" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:18px;">
+                    <div style="font-family:'Rajdhani',sans-serif;font-size:0.9rem;font-weight:700;color:var(--accent);letter-spacing:1px;margin-bottom:10px;">IDs DOS PRODUTOS (use para vincular contas)</div>
+                    <div id="legenda-ids-lista" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+                </div>
+
                 <div class="table-card">
                     <div class="table-header">
                         <h3>CONTAS CADASTRADAS</h3>
-                        <span id="estoque-count" style="color:var(--muted);font-size:0.85rem;"></span>
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <span id="estoque-count" style="color:var(--muted);font-size:0.85rem;"></span>
+                            <button class="btn btn-outline btn-sm" onclick="toggleLegendaIds()">🔑 Ver IDs</button>
+                        </div>
                     </div>
                     <table>
                         <thead>
                             <tr>
+                                <th>ID Produto</th>
                                 <th>Produto</th>
                                 <th>Dados da Conta</th>
                                 <th>Status</th>
@@ -461,7 +544,7 @@ tr:hover td { background: rgba(255,255,255,0.02); }
                             </tr>
                         </thead>
                         <tbody id="tabela-estoque">
-                            <tr><td colspan="4" class="loading">Carregando...</td></tr>
+                            <tr><td colspan="5" class="loading">Carregando...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -481,6 +564,7 @@ tr:hover td { background: rgba(255,255,255,0.02); }
                     <table>
                         <thead>
                             <tr>
+                                <th>ID</th>
                                 <th>Nome</th>
                                 <th>Categoria</th>
                                 <th>Preço</th>
@@ -489,7 +573,7 @@ tr:hover td { background: rgba(255,255,255,0.02); }
                             </tr>
                         </thead>
                         <tbody id="tabela-produtos">
-                            <tr><td colspan="5" class="loading">Carregando...</td></tr>
+                            <tr><td colspan="6" class="loading">Carregando...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -529,23 +613,64 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 <div class="modal-overlay" id="modal-estoque">
     <div class="modal-box">
         <h3>📦 ADICIONAR CONTA</h3>
-        <div class="form-grid">
-            <div class="form-group">
-                <label>Produto</label>
-                <select id="estoque-produto"></select>
-            </div>
-            <div class="form-group">
-                <label>Status</label>
-                <select id="estoque-status">
-                    <option value="disponivel">Disponível</option>
-                    <option value="vendido">Vendido</option>
-                </select>
-            </div>
-            <div class="form-group form-full">
-                <label>Dados da Conta</label>
-                <textarea id="estoque-dados" placeholder="usuario:senha ou qualquer dado da conta..."></textarea>
+
+        <!-- Tabs: por select ou por ID manual -->
+        <div class="mode-tabs">
+            <button class="mode-tab active" id="tab-select" onclick="trocarModoEstoque('select')">Selecionar Produto</button>
+            <button class="mode-tab" id="tab-id" onclick="trocarModoEstoque('id')">Digitar ID</button>
+        </div>
+
+        <!-- Modo: select -->
+        <div id="modo-select">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Produto</label>
+                    <select id="estoque-produto"></select>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="estoque-status">
+                        <option value="disponivel">Disponível</option>
+                        <option value="vendido">Vendido</option>
+                    </select>
+                </div>
+                <div class="form-group form-full">
+                    <label>Dados da Conta</label>
+                    <textarea id="estoque-dados" placeholder="usuario:senha ou qualquer dado da conta..."></textarea>
+                </div>
             </div>
         </div>
+
+        <!-- Modo: ID manual -->
+        <div id="modo-id" style="display:none;">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>produto_id (número)</label>
+                    <input type="number" id="estoque-produto-id-manual" placeholder="Ex: 3">
+                    <span class="form-hint">Veja os IDs na tabela de Produtos ou clique em "Ver IDs" no Estoque</span>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="estoque-status-manual">
+                        <option value="disponivel">Disponível</option>
+                        <option value="vendido">Vendido</option>
+                    </select>
+                </div>
+                <div class="form-group form-full">
+                    <label>Dados da Conta</label>
+                    <textarea id="estoque-dados-manual" placeholder="usuario:senha ou qualquer dado da conta..."></textarea>
+                </div>
+            </div>
+            <!-- Prévia do produto para o ID digitado -->
+            <div id="produto-preview" style="display:none;padding:10px 14px;border-radius:8px;background:rgba(0,229,255,0.06);border:1px solid var(--border2);font-size:0.85rem;margin-bottom:8px;">
+                <span style="color:var(--muted);">Produto encontrado:</span>
+                <strong id="produto-preview-nome" style="color:var(--accent2);margin-left:6px;"></strong>
+            </div>
+            <div id="produto-preview-erro" style="display:none;padding:8px 14px;border-radius:8px;background:rgba(255,92,92,0.07);border:1px solid rgba(255,92,92,0.2);font-size:0.82rem;color:var(--danger);margin-bottom:8px;">
+                ID não encontrado nos produtos cadastrados.
+            </div>
+        </div>
+
         <div class="modal-footer">
             <button class="btn btn-outline" onclick="fecharModal('modal-estoque')">Cancelar</button>
             <button class="btn btn-primary" onclick="salvarEstoque()">Salvar</button>
@@ -591,6 +716,40 @@ tr:hover td { background: rgba(255,255,255,0.02); }
     </div>
 </div>
 
+<!-- MODAL EDITAR produto_id do estoque -->
+<div class="modal-overlay" id="modal-editar-pid">
+    <div class="modal-box" style="max-width:400px;">
+        <h3>✏️ ALTERAR PRODUTO_ID</h3>
+        <input type="hidden" id="editar-pid-conta-id">
+        <div style="margin-bottom:14px;padding:12px 14px;background:rgba(0,229,255,0.05);border:1px solid var(--border);border-radius:8px;font-size:0.85rem;">
+            <div style="color:var(--muted);margin-bottom:4px;">Conta:</div>
+            <div id="editar-pid-dados" style="font-family:monospace;color:var(--text);font-size:0.82rem;word-break:break-all;"></div>
+        </div>
+        <div class="form-group" style="margin-bottom:14px;">
+            <label>Novo produto_id</label>
+            <input type="number" id="editar-pid-valor" placeholder="Ex: 5" oninput="buscarPreviewEdicao(this.value)">
+            <span class="form-hint">Veja os IDs disponíveis abaixo</span>
+        </div>
+        <!-- Preview do produto encontrado -->
+        <div id="editar-pid-preview" style="display:none;padding:10px 14px;border-radius:8px;background:rgba(0,255,136,0.06);border:1px solid rgba(0,255,136,0.2);font-size:0.85rem;margin-bottom:10px;">
+            <span style="color:var(--muted);">Produto:</span>
+            <strong id="editar-pid-preview-nome" style="color:var(--accent2);margin-left:6px;"></strong>
+        </div>
+        <div id="editar-pid-erro" style="display:none;padding:8px 14px;border-radius:8px;background:rgba(255,92,92,0.07);border:1px solid rgba(255,92,92,0.2);font-size:0.82rem;color:var(--danger);margin-bottom:10px;">
+            ID não encontrado nos produtos cadastrados.
+        </div>
+        <!-- Lista rápida de IDs -->
+        <div style="margin-bottom:16px;">
+            <div style="font-size:0.78rem;color:var(--muted);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;">Produtos disponíveis:</div>
+            <div id="editar-pid-lista" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="fecharModal('modal-editar-pid')">Cancelar</button>
+            <button class="btn btn-primary" onclick="salvarEdicaoPid()">Salvar</button>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // CONFIG
@@ -599,6 +758,9 @@ const ADMIN_PASS = 'lojaanjos2026'
 const _URL = 'https://pqrtxbcaxnlcqurzmryi.supabase.co'
 const _KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnR4YmNheG5sY3F1cnptcnlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2MzQ3MTksImV4cCI6MjA4ODIxMDcxOX0.e59ULROS4rI9xh-YFyarJimHX4ntNeqq7zNmgWBFKow'
 const _supabase = supabase.createClient(_URL, _KEY)
+
+// Cache de produtos para lookups rápidos
+let _cacheProdutos = []
 
 // LOGIN
 function fazerLogin() {
@@ -619,7 +781,6 @@ function sair() {
     location.reload()
 }
 
-// Verifica se já está logado
 if (sessionStorage.getItem('admin') === 'true') {
     document.getElementById('login-screen').style.display = 'none'
     document.getElementById('admin-screen').style.display = 'block'
@@ -682,40 +843,122 @@ async function carregarEstoque() {
     const { data: produtos } = await _supabase
         .from('produtos')
         .select('id, nome')
-        .eq('categoria', 'contas')
 
-    // Mapa de id → nome
+    _cacheProdutos = produtos || []
+
+    // Mapa id → nome
     const mapaProdutos = {}
-    ;(produtos || []).forEach(p => { mapaProdutos[p.id] = p.nome })
+    ;(_cacheProdutos).forEach(p => { mapaProdutos[p.id] = p.nome })
 
+    // Atualiza select do modal
     const sel = document.getElementById('estoque-produto')
-    sel.innerHTML = (produtos || []).map(p => `<option value="${p.id}">${p.nome}</option>`).join('')
+    const produtosContas = _cacheProdutos.filter(p => true) // todos
+    sel.innerHTML = produtosContas.map(p =>
+        `<option value="${p.id}">[ID: ${p.id}] ${p.nome}</option>`
+    ).join('')
+
+    // Legenda de IDs
+    const legendaLista = document.getElementById('legenda-ids-lista')
+    legendaLista.innerHTML = _cacheProdutos.map(p =>
+        `<div style="display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;background:var(--bg2);border:1px solid var(--border);">
+            <span class="id-badge">#${p.id}</span>
+            <span style="font-size:0.82rem;color:var(--text);">${p.nome}</span>
+        </div>`
+    ).join('')
+
+    // Popula lista rápida no modal de edição
+    const editarLista = document.getElementById('editar-pid-lista')
+    if (editarLista) {
+        editarLista.innerHTML = _cacheProdutos.map(p =>
+            `<span class="id-badge" style="cursor:pointer;" onclick="selecionarPidRapido(${p.id})" title="${p.nome}">#${p.id} ${p.nome}</span>`
+        ).join('')
+    }
 
     const disponiveis = (contas || []).filter(c => c.status === 'disponivel').length
     document.getElementById('estoque-count').innerText = `${disponiveis} disponíveis`
 
     const tbody = document.getElementById('tabela-estoque')
     if (!contas || contas.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" class="loading">Nenhuma conta cadastrada</td></tr>'
+        tbody.innerHTML = '<tr><td colspan="5" class="loading">Nenhuma conta cadastrada</td></tr>'
         return
     }
     tbody.innerHTML = contas.map(c => `
         <tr>
-            <td><strong>${mapaProdutos[c.produto_id] || 'Produto #' + c.produto_id}</strong></td>
-            <td style="font-family:monospace;font-size:0.82rem;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.dados_contas || '-'}</td>
+            <td>
+                <div class="inline-id-edit">
+                    <span class="id-badge">#${c.produto_id}</span>
+                    <button class="btn btn-outline btn-sm" onclick="abrirEditarPid('${c.id}', ${c.produto_id}, \`${(c.dados_contas || '').replace(/`/g,'')}\`)" title="Alterar produto_id">✏️</button>
+                </div>
+            </td>
+            <td><strong>${mapaProdutos[c.produto_id] || '<span style="color:var(--danger);font-size:0.8rem;">Produto não encontrado</span>'}</strong></td>
+            <td style="font-family:monospace;font-size:0.82rem;color:var(--muted);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.dados_contas || '-'}</td>
             <td><span class="badge ${c.status === 'disponivel' ? 'badge-green' : 'badge-red'}">${c.status}</span></td>
-            <td><button class="btn btn-danger" onclick="deletarEstoque('${c.id}')">Remover</button></td>
+            <td><button class="btn btn-danger btn-sm" onclick="deletarEstoque('${c.id}')">Remover</button></td>
         </tr>
     `).join('')
 }
+
+// Mostrar/ocultar legenda de IDs
+function toggleLegendaIds() {
+    const el = document.getElementById('legenda-ids')
+    el.style.display = el.style.display === 'none' ? 'block' : 'none'
+}
+
+// Trocar modo no modal de adicionar conta
+function trocarModoEstoque(modo) {
+    document.getElementById('modo-select').style.display = modo === 'select' ? 'block' : 'none'
+    document.getElementById('modo-id').style.display = modo === 'id' ? 'block' : 'none'
+    document.getElementById('tab-select').classList.toggle('active', modo === 'select')
+    document.getElementById('tab-id').classList.toggle('active', modo === 'id')
+}
+
+// Preview ao digitar ID no modal de adicionar
+document.addEventListener('DOMContentLoaded', () => {
+    const inp = document.getElementById('estoque-produto-id-manual')
+    if (inp) {
+        inp.addEventListener('input', () => buscarPreviewAdicao(inp.value))
+    }
+})
+
+function buscarPreviewAdicao(val) {
+    const id = parseInt(val)
+    const prev = document.getElementById('produto-preview')
+    const prevNome = document.getElementById('produto-preview-nome')
+    const prevErro = document.getElementById('produto-preview-erro')
+    if (!val) { prev.style.display = 'none'; prevErro.style.display = 'none'; return }
+    const found = _cacheProdutos.find(p => p.id === id)
+    if (found) {
+        prevNome.innerText = `[#${found.id}] ${found.nome}`
+        prev.style.display = 'block'
+        prevErro.style.display = 'none'
+    } else {
+        prev.style.display = 'none'
+        prevErro.style.display = 'block'
+    }
+}
+
 async function salvarEstoque() {
-    const produto_id = document.getElementById('estoque-produto').value
-    const dados_contas = document.getElementById('estoque-dados').value.trim()
-    const status = document.getElementById('estoque-status').value
+    const modoId = document.getElementById('modo-id').style.display !== 'none'
+    let produto_id, dados_contas, status
+
+    if (modoId) {
+        produto_id = document.getElementById('estoque-produto-id-manual').value
+        dados_contas = document.getElementById('estoque-dados-manual').value.trim()
+        status = document.getElementById('estoque-status-manual').value
+        if (!produto_id) return alert('Informe o produto_id!')
+    } else {
+        produto_id = document.getElementById('estoque-produto').value
+        dados_contas = document.getElementById('estoque-dados').value.trim()
+        status = document.getElementById('estoque-status').value
+    }
 
     if (!dados_contas) return alert('Preencha os dados da conta!')
 
-    const { error } = await _supabase.from('estoque_contas').insert({ produto_id, dados_contas, status })
+    const { error } = await _supabase.from('estoque_contas').insert({
+        produto_id: parseInt(produto_id),
+        dados_contas,
+        status
+    })
     if (error) return alert('Erro: ' + error.message)
 
     fecharModal('modal-estoque')
@@ -729,23 +972,80 @@ async function deletarEstoque(id) {
     carregarEstoque()
 }
 
+// EDITAR produto_id de uma conta existente
+function abrirEditarPid(contaId, pidAtual, dadosConta) {
+    document.getElementById('editar-pid-conta-id').value = contaId
+    document.getElementById('editar-pid-valor').value = pidAtual
+    document.getElementById('editar-pid-dados').innerText = dadosConta || '-'
+
+    // Limpar previews
+    document.getElementById('editar-pid-preview').style.display = 'none'
+    document.getElementById('editar-pid-erro').style.display = 'none'
+
+    // Mostrar preview do produto atual
+    buscarPreviewEdicao(pidAtual)
+
+    document.getElementById('modal-editar-pid').style.display = 'flex'
+}
+
+function buscarPreviewEdicao(val) {
+    const id = parseInt(val)
+    const prev = document.getElementById('editar-pid-preview')
+    const prevNome = document.getElementById('editar-pid-preview-nome')
+    const erro = document.getElementById('editar-pid-erro')
+    if (!val) { prev.style.display = 'none'; erro.style.display = 'none'; return }
+    const found = _cacheProdutos.find(p => p.id === id)
+    if (found) {
+        prevNome.innerText = `[#${found.id}] ${found.nome}`
+        prev.style.display = 'block'
+        erro.style.display = 'none'
+    } else {
+        prev.style.display = 'none'
+        erro.style.display = 'block'
+    }
+}
+
+function selecionarPidRapido(id) {
+    document.getElementById('editar-pid-valor').value = id
+    buscarPreviewEdicao(id)
+}
+
+async function salvarEdicaoPid() {
+    const contaId = document.getElementById('editar-pid-conta-id').value
+    const novoPid = parseInt(document.getElementById('editar-pid-valor').value)
+    if (!novoPid) return alert('Informe o produto_id!')
+
+    const { error } = await _supabase
+        .from('estoque_contas')
+        .update({ produto_id: novoPid })
+        .eq('id', contaId)
+
+    if (error) return alert('Erro: ' + error.message)
+
+    fecharModal('modal-editar-pid')
+    carregarEstoque()
+    alert('produto_id atualizado! ✅')
+}
+
 // PRODUTOS
 async function carregarProdutos() {
     const { data: produtos } = await _supabase.from('produtos').select('*').order('id')
+    _cacheProdutos = produtos || []
     const tbody = document.getElementById('tabela-produtos')
     if (!produtos || produtos.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="loading">Nenhum produto</td></tr>'
+        tbody.innerHTML = '<tr><td colspan="6" class="loading">Nenhum produto</td></tr>'
         return
     }
     tbody.innerHTML = produtos.map(p => `
         <tr>
+            <td><span class="id-badge">#${p.id}</span></td>
             <td><strong>${p.nome}</strong></td>
             <td><span class="badge badge-cyan">${p.categoria}</span></td>
             <td style="color:var(--accent2);font-weight:700">R$ ${parseFloat(p.preco).toFixed(2)}</td>
             <td>${p.estoque > 0 ? `<span class="badge badge-green">${p.estoque}</span>` : `<span class="badge badge-red">0</span>`}</td>
             <td style="display:flex;gap:8px">
-                <button class="btn btn-outline" onclick="editarProduto(${p.id})">Editar</button>
-                <button class="btn btn-danger" onclick="deletarProduto(${p.id})">Excluir</button>
+                <button class="btn btn-outline btn-sm" onclick="editarProduto(${p.id})">Editar</button>
+                <button class="btn btn-danger btn-sm" onclick="deletarProduto(${p.id})">Excluir</button>
             </td>
         </tr>
     `).join('')
@@ -827,12 +1127,18 @@ async function carregarPedidos() {
 // UTILITÁRIOS
 function abrirModalEstoque() {
     document.getElementById('estoque-dados').value = ''
+    document.getElementById('estoque-dados-manual').value = ''
+    document.getElementById('estoque-produto-id-manual').value = ''
+    document.getElementById('produto-preview').style.display = 'none'
+    document.getElementById('produto-preview-erro').style.display = 'none'
+    trocarModoEstoque('select')
     document.getElementById('modal-estoque').style.display = 'flex'
 }
+
 function fecharModal(id) {
     document.getElementById(id).style.display = 'none'
 }
-// Fecha modal clicando fora
+
 document.querySelectorAll('.modal-overlay').forEach(m => {
     m.addEventListener('click', e => { if (e.target === m) m.style.display = 'none' })
 })
