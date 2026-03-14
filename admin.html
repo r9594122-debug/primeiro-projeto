@@ -557,7 +557,10 @@ tr:hover td { background: rgba(255,255,255,0.02); }
                         <h1>Produtos</h1>
                         <p>Gerencie os produtos da loja</p>
                     </div>
-                    <button class="btn btn-primary" onclick="abrirModalProduto()">+ Novo Produto</button>
+                    <div style="display:flex;gap:10px;">
+                        <button class="btn btn-outline" onclick="abrirGaleria()">🖼️ Galeria</button>
+                        <button class="btn btn-primary" onclick="abrirModalProduto()">+ Novo Produto</button>
+                    </div>
                 </div>
                 <div class="table-card">
                     <div class="table-header"><h3>TODOS OS PRODUTOS</h3></div>
@@ -565,6 +568,7 @@ tr:hover td { background: rgba(255,255,255,0.02); }
                         <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>Imagem</th>
                                 <th>Nome</th>
                                 <th>Categoria</th>
                                 <th>Preço</th>
@@ -573,7 +577,7 @@ tr:hover td { background: rgba(255,255,255,0.02); }
                             </tr>
                         </thead>
                         <tbody id="tabela-produtos">
-                            <tr><td colspan="6" class="loading">Carregando...</td></tr>
+                            <tr><td colspan="7" class="loading">Carregando...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -704,14 +708,57 @@ tr:hover td { background: rgba(255,255,255,0.02); }
                     <option value="gamepass">Gamepass</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label>URL da Imagem</label>
-                <input type="text" id="produto-img" placeholder="https://...">
+            <div class="form-group form-full">
+                <label>Imagem do Produto</label>
+                <!-- Área de upload -->
+                <div id="img-upload-area" onclick="document.getElementById('img-file-input').click()"
+                    style="border:2px dashed var(--border2);border-radius:10px;padding:18px;text-align:center;cursor:pointer;transition:border-color 0.2s;background:var(--bg2);"
+                    ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
+                    ondragleave="this.style.borderColor='var(--border2)'"
+                    ondrop="handleImgDrop(event)">
+                    <div id="img-upload-placeholder">
+                        <div style="font-size:22px;margin-bottom:6px;">🖼️</div>
+                        <div style="font-size:0.82rem;color:var(--muted);">Clique ou arraste uma imagem aqui</div>
+                        <div style="font-size:0.75rem;color:var(--muted);margin-top:3px;">JPG, PNG, WEBP — máx 2MB</div>
+                    </div>
+                    <img id="img-preview" src="" alt="" style="display:none;max-height:120px;max-width:100%;border-radius:6px;object-fit:contain;">
+                </div>
+                <input type="file" id="img-file-input" accept="image/*" style="display:none" onchange="handleImgSelect(this)">
+                <!-- Status do upload -->
+                <div id="img-upload-status" style="display:none;margin-top:8px;font-size:0.82rem;"></div>
+                <!-- URL resultante (editável) -->
+                <div style="display:flex;gap:8px;margin-top:8px;align-items:center;">
+                    <input type="text" id="produto-img" placeholder="URL gerada após upload, ou cole aqui..." style="flex:1;">
+                    <button type="button" class="btn btn-outline btn-sm" onclick="copiarUrlImg()" title="Copiar URL">📋</button>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="limparImg()" title="Remover imagem">✕</button>
+                </div>
+                <span class="form-hint">Faça upload acima e a URL do Supabase será preenchida automaticamente</span>
             </div>
         </div>
         <div class="modal-footer">
             <button class="btn btn-outline" onclick="fecharModal('modal-produto')">Cancelar</button>
-            <button class="btn btn-primary" onclick="salvarProduto()">Salvar</button>
+            <button class="btn btn-primary" id="btn-salvar-produto" onclick="salvarProduto()">Salvar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL GALERIA DE IMAGENS -->
+<div class="modal-overlay" id="modal-galeria">
+    <div class="modal-box" style="max-width:700px;">
+        <h3>🖼️ GALERIA DE IMAGENS</h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <span style="color:var(--muted);font-size:0.85rem;" id="galeria-count"></span>
+            <button class="btn btn-primary btn-sm" onclick="document.getElementById('galeria-file-input').click()">+ Upload</button>
+            <input type="file" id="galeria-file-input" accept="image/*" multiple style="display:none" onchange="uploadGaleriaFiles(this)">
+        </div>
+        <!-- Status upload galeria -->
+        <div id="galeria-upload-status" style="display:none;margin-bottom:12px;padding:10px 14px;border-radius:8px;font-size:0.82rem;"></div>
+        <!-- Grid de imagens -->
+        <div id="galeria-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;max-height:400px;overflow-y:auto;padding-right:4px;">
+            <div class="loading">Carregando imagens...</div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="fecharModal('modal-galeria')">Fechar</button>
         </div>
     </div>
 </div>
@@ -1039,6 +1086,12 @@ async function carregarProdutos() {
     tbody.innerHTML = produtos.map(p => `
         <tr>
             <td><span class="id-badge">#${p.id}</span></td>
+            <td>
+                ${p.imagem_url
+                    ? `<img src="${p.imagem_url}" alt="${p.nome}" style="width:44px;height:44px;object-fit:cover;border-radius:6px;border:1px solid var(--border);cursor:pointer;" onclick="abrirPreviewImg('${p.imagem_url}','${p.nome}')">`
+                    : `<div style="width:44px;height:44px;border-radius:6px;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;" onclick="editarProduto(${p.id})" title="Adicionar imagem">📷</div>`
+                }
+            </td>
             <td><strong>${p.nome}</strong></td>
             <td><span class="badge badge-cyan">${p.categoria}</span></td>
             <td style="color:var(--accent2);font-weight:700">R$ ${parseFloat(p.preco).toFixed(2)}</td>
@@ -1057,7 +1110,7 @@ function abrirModalProduto() {
     document.getElementById('produto-nome').value = ''
     document.getElementById('produto-preco').value = ''
     document.getElementById('produto-estoque').value = ''
-    document.getElementById('produto-img').value = ''
+    limparImg()
     document.getElementById('modal-produto').style.display = 'flex'
 }
 
@@ -1070,7 +1123,18 @@ async function editarProduto(id) {
     document.getElementById('produto-preco').value = data.preco
     document.getElementById('produto-estoque').value = data.estoque
     document.getElementById('produto-categoria').value = data.categoria
-    document.getElementById('produto-img').value = data.imagem_url || ''
+    const imgUrl = data.imagem_url || ''
+    document.getElementById('produto-img').value = imgUrl
+    // mostrar preview se tiver imagem
+    if (imgUrl) {
+        const prev = document.getElementById('img-preview')
+        const placeholder = document.getElementById('img-upload-placeholder')
+        prev.src = imgUrl
+        prev.style.display = 'block'
+        placeholder.style.display = 'none'
+    } else {
+        limparImg()
+    }
     document.getElementById('modal-produto').style.display = 'flex'
 }
 
@@ -1142,6 +1206,192 @@ function fecharModal(id) {
 document.querySelectorAll('.modal-overlay').forEach(m => {
     m.addEventListener('click', e => { if (e.target === m) m.style.display = 'none' })
 })
+
+
+// ===================== IMAGEM / SUPABASE STORAGE =====================
+const STORAGE_BUCKET = 'produto-imagens' // nome do bucket no Supabase Storage
+
+async function uploadImgParaSupabase(file) {
+    const ext = file.name.split('.').pop().toLowerCase()
+    const nome = `produto_${Date.now()}.${ext}`
+    const { data, error } = await _supabase.storage
+        .from(STORAGE_BUCKET)
+        .upload(nome, file, { cacheControl: '3600', upsert: false })
+    if (error) throw error
+    const { data: pub } = _supabase.storage.from(STORAGE_BUCKET).getPublicUrl(nome)
+    return pub.publicUrl
+}
+
+function setImgStatus(msg, tipo) {
+    const el = document.getElementById('img-upload-status')
+    el.style.display = 'block'
+    el.style.color = tipo === 'erro' ? 'var(--danger)' : tipo === 'ok' ? 'var(--accent2)' : 'var(--accent)'
+    el.innerText = msg
+}
+
+function handleImgSelect(input) {
+    if (input.files && input.files[0]) processarArquivoImg(input.files[0])
+}
+
+function handleImgDrop(e) {
+    e.preventDefault()
+    document.getElementById('img-upload-area').style.borderColor = 'var(--border2)'
+    const file = e.dataTransfer.files[0]
+    if (file && file.type.startsWith('image/')) processarArquivoImg(file)
+}
+
+async function processarArquivoImg(file) {
+    if (file.size > 2 * 1024 * 1024) {
+        setImgStatus('❌ Arquivo muito grande (máx 2MB)', 'erro'); return
+    }
+    // Mostrar preview local imediatamente
+    const reader = new FileReader()
+    reader.onload = e => {
+        const prev = document.getElementById('img-preview')
+        const placeholder = document.getElementById('img-upload-placeholder')
+        prev.src = e.target.result
+        prev.style.display = 'block'
+        placeholder.style.display = 'none'
+    }
+    reader.readAsDataURL(file)
+
+    setImgStatus('⏳ Enviando para o Supabase...', 'info')
+    document.getElementById('btn-salvar-produto').disabled = true
+
+    try {
+        const url = await uploadImgParaSupabase(file)
+        document.getElementById('produto-img').value = url
+        setImgStatus('✅ Upload concluído! URL preenchida automaticamente.', 'ok')
+    } catch (err) {
+        setImgStatus('❌ Erro no upload: ' + err.message, 'erro')
+    } finally {
+        document.getElementById('btn-salvar-produto').disabled = false
+    }
+}
+
+function limparImg() {
+    document.getElementById('produto-img').value = ''
+    document.getElementById('img-preview').src = ''
+    document.getElementById('img-preview').style.display = 'none'
+    document.getElementById('img-upload-placeholder').style.display = 'block'
+    document.getElementById('img-upload-status').style.display = 'none'
+    const inp = document.getElementById('img-file-input')
+    if (inp) inp.value = ''
+}
+
+function copiarUrlImg() {
+    const url = document.getElementById('produto-img').value
+    if (!url) return alert('Nenhuma URL para copiar!')
+    navigator.clipboard.writeText(url).then(() => {
+        setImgStatus('📋 URL copiada!', 'ok')
+    })
+}
+
+// Preview de imagem do produto (clique na thumbnail da tabela)
+function abrirPreviewImg(url, nome) {
+    const w = window.open('', '_blank', 'width=600,height=500,resizable=yes')
+    w.document.write(`<html><body style="margin:0;background:#070b14;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;">
+        <p style="color:#7a9bb5;font-family:sans-serif;font-size:13px;margin-bottom:12px;">${nome}</p>
+        <img src="${url}" style="max-width:100%;max-height:80vh;border-radius:8px;">
+        <p style="color:#7a9bb5;font-family:monospace;font-size:11px;margin-top:12px;word-break:break-all;padding:0 20px;">${url}</p>
+    </body></html>`)
+}
+
+// ===================== GALERIA =====================
+async function abrirGaleria() {
+    document.getElementById('modal-galeria').style.display = 'flex'
+    await carregarGaleria()
+}
+
+async function carregarGaleria() {
+    const grid = document.getElementById('galeria-grid')
+    grid.innerHTML = '<div class="loading">Carregando imagens...</div>'
+    document.getElementById('galeria-upload-status').style.display = 'none'
+
+    const { data, error } = await _supabase.storage.from(STORAGE_BUCKET).list('', {
+        limit: 100, offset: 0, sortBy: { column: 'created_at', order: 'desc' }
+    })
+
+    if (error) {
+        grid.innerHTML = `<div style="color:var(--danger);font-size:0.85rem;padding:20px;">Erro: ${error.message}<br><br>
+            <small style="color:var(--muted);">Verifique se o bucket "<strong>${STORAGE_BUCKET}</strong>" existe no Supabase Storage e tem política pública de leitura.</small></div>`
+        return
+    }
+
+    const arquivos = (data || []).filter(f => f.name && f.name !== '.emptyFolderPlaceholder')
+    document.getElementById('galeria-count').innerText = `${arquivos.length} imagem(ns)`
+
+    if (arquivos.length === 0) {
+        grid.innerHTML = '<div style="color:var(--muted);font-size:0.85rem;padding:20px;text-align:center;">Nenhuma imagem ainda. Faça upload acima!</div>'
+        return
+    }
+
+    grid.innerHTML = arquivos.map(f => {
+        const { data: pub } = _supabase.storage.from(STORAGE_BUCKET).getPublicUrl(f.name)
+        const url = pub.publicUrl
+        return `<div style="position:relative;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--bg2);">
+            <img src="${url}" alt="${f.name}" style="width:100%;height:100px;object-fit:cover;display:block;cursor:pointer;" onclick="abrirPreviewImg('${url}','${f.name}')">
+            <div style="padding:6px 8px;">
+                <div style="font-size:0.7rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${f.name}</div>
+                <div style="display:flex;gap:4px;margin-top:5px;">
+                    <button class="btn btn-outline btn-sm" style="flex:1;font-size:0.7rem;padding:3px 6px;" onclick="usarImgGaleria('${url}')">Usar</button>
+                    <button class="btn btn-danger btn-sm" style="font-size:0.7rem;padding:3px 8px;" onclick="deletarImgGaleria('${f.name}',this)">✕</button>
+                </div>
+            </div>
+        </div>`
+    }).join('')
+}
+
+async function uploadGaleriaFiles(input) {
+    const files = Array.from(input.files)
+    if (!files.length) return
+    const st = document.getElementById('galeria-upload-status')
+    st.style.display = 'block'
+    st.style.color = 'var(--accent)'
+    st.innerText = `⏳ Enviando ${files.length} arquivo(s)...`
+
+    let ok = 0, erros = []
+    for (const file of files) {
+        if (file.size > 2 * 1024 * 1024) { erros.push(file.name + ' (muito grande)'); continue }
+        try {
+            await uploadImgParaSupabase(file)
+            ok++
+        } catch (e) {
+            erros.push(file.name + ': ' + e.message)
+        }
+    }
+
+    st.style.color = erros.length ? 'var(--danger)' : 'var(--accent2)'
+    st.innerText = ok > 0 ? `✅ ${ok} enviado(s) com sucesso.` : ''
+    if (erros.length) st.innerText += ' ❌ Erros: ' + erros.join(', ')
+    input.value = ''
+    await carregarGaleria()
+}
+
+async function deletarImgGaleria(nome, btn) {
+    if (!confirm('Deletar esta imagem do Storage?')) return
+    btn.disabled = true
+    const { error } = await _supabase.storage.from(STORAGE_BUCKET).remove([nome])
+    if (error) { alert('Erro: ' + error.message); btn.disabled = false; return }
+    await carregarGaleria()
+}
+
+function usarImgGaleria(url) {
+    // Se o modal de produto estiver aberto, usar lá
+    const modalProduto = document.getElementById('modal-produto')
+    if (modalProduto.style.display === 'flex') {
+        document.getElementById('produto-img').value = url
+        const prev = document.getElementById('img-preview')
+        prev.src = url
+        prev.style.display = 'block'
+        document.getElementById('img-upload-placeholder').style.display = 'none'
+        setImgStatus('✅ Imagem selecionada da galeria!', 'ok')
+        fecharModal('modal-galeria')
+    } else {
+        navigator.clipboard.writeText(url).then(() => alert('URL copiada: ' + url))
+    }
+}
+
 </script>
 </body>
 </html>
